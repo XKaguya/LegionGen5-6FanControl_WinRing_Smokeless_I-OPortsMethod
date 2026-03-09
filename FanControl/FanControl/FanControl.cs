@@ -20,31 +20,6 @@ using static FanControl.Utils.EC;
 
 namespace FanControl.Utils
 {
-    internal static class WinRing
-    {
-        //DLL
-        public static bool WinRingInitOk = false;
-        [DllImport("WinRing0x64.dll")]
-        public static extern DLL_Error_Code GetDllStatus();
-        [DllImport("WinRing0x64.dll")]
-        public static extern UInt64 GetDllVersion(ref byte major, ref byte minor, ref byte revision, ref byte release);
-        [DllImport("WinRing0x64.dll")]
-        public static extern UInt64 GetDriverVersion(ref byte major, ref byte minor, ref byte revision, ref byte release);
-        [DllImport("WinRing0x64.dll")]
-        public static extern DriverType GetDriverType();
-        [DllImport("WinRing0x64.dll")]
-        public static extern bool InitializeOls();
-        [DllImport("WinRing0x64.dll")]
-        public static extern void DeinitializeOls();
-
-        [DllImport("WinRing0x64.dll")]
-        public static extern byte ReadIoPortByte(UInt32 address);
-
-        [DllImport("WinRing0x64.dll")]
-        public static extern void WriteIoPortByte(UInt32 port, byte value);
-
-    }
-
 
     internal static class EC
     {
@@ -71,20 +46,20 @@ namespace FanControl.Utils
 
         public static void DirectECWrite(byte EC_ADDR_PORT, byte EC_DATA_PORT, UInt16 Addr, byte data)
         {
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, 0x11);
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, (byte)((Addr >> 8) & 0xFF));
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x11);
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, (byte)((Addr >> 8) & 0xFF));
 
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, 0x10);
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, (byte)(Addr & 0xFF));
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x10);
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, (byte)(Addr & 0xFF));
 
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, 0x12);
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, data);
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x12);
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, data);
         }
 
         public static void DirectECWriteArray(byte EC_ADDR_PORT, byte EC_DATA_PORT, UInt16 Addr_base, byte[] data)
@@ -92,39 +67,39 @@ namespace FanControl.Utils
             for (var i = 0; i < data.Count(); i++)
             {
                 var Addr = (ushort)(Addr_base + i);
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, 0x11);
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, (byte)((Addr >> 8) & 0xFF));
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x11);
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, (byte)((Addr >> 8) & 0xFF));
 
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, 0x10);
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, (byte)(Addr & 0xFF));
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x10);
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, (byte)(Addr & 0xFF));
 
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, 0x12);
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, data[i]);
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x12);
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, data[i]);
             }
         }
 
         public static byte DirectECRead(byte EC_ADDR_PORT, byte EC_DATA_PORT, UInt16 Addr)
         {
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, 0x11);
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, (byte)((Addr >> 8) & 0xFF));
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x11);
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, (byte)((Addr >> 8) & 0xFF));
 
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, 0x10);
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, (byte)(Addr & 0xFF));
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x10);
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, (byte)(Addr & 0xFF));
 
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-            WinRing.WriteIoPortByte(EC_DATA_PORT, 0x12);
-            WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-            return WinRing.ReadIoPortByte(EC_DATA_PORT);
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+            PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x12);
+            PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+            return PawnIO.ReadIoPortByte(EC_DATA_PORT);
         }
 
         public static byte[] DirectECReadArray(byte EC_ADDR_PORT, byte EC_DATA_PORT, UInt16 Addr_base, int size)
@@ -133,20 +108,20 @@ namespace FanControl.Utils
             for (var i = 0; i < size; i++)
             {
                 var Addr = (ushort)(Addr_base + i);
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, 0x11);
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, (byte)((Addr >> 8) & 0xFF));
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x11);
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, (byte)((Addr >> 8) & 0xFF));
 
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, 0x10);
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, (byte)(Addr & 0xFF));
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x10);
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, (byte)(Addr & 0xFF));
 
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
-                WinRing.WriteIoPortByte(EC_DATA_PORT, 0x12);
-                WinRing.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
-                buffer[i] = WinRing.ReadIoPortByte(EC_DATA_PORT);
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2E);
+                PawnIO.WriteIoPortByte(EC_DATA_PORT, 0x12);
+                PawnIO.WriteIoPortByte(EC_ADDR_PORT, 0x2F);
+                buffer[i] = PawnIO.ReadIoPortByte(EC_DATA_PORT);
             }
             return buffer;
         }
@@ -341,10 +316,10 @@ namespace FanControl.Utils
         {
             while (true)
             {
-                // Initialize WinRing
-                WinRing.WinRingInitOk = WinRing.InitializeOls();
-                // Check if WinRing initialized properly, if it did then Write & Read from the EC
-                if (WinRing.WinRingInitOk)
+                // Initialize PawnIO
+                PawnIO.Initialize();
+                // Check if PawnIO initialized properly, if it did then Write & Read from the EC
+                if (PawnIO.IsInitialized)
                 {
                     ApplyFanCurve();
                 }
@@ -354,8 +329,8 @@ namespace FanControl.Utils
                     Console.WriteLine("WinRing initialization failed. Check if the driver is loaded.");
                 }
 
-                // Deallocate info related to WinRing
-                WinRing.DeinitializeOls();
+                // Deallocate info related to PawnIO
+                PawnIO.Deinitialize();
 
                 // Wait for 10 seconds before looping back
                 await Task.Delay(15000); // 15000 milliseconds = 15 seconds
